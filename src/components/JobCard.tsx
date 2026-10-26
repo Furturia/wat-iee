@@ -3,7 +3,6 @@ import {
   MapPin,
   Calendar,
   Clock,
-  Shield,
   Briefcase,
   Copy,
   Edit2,
@@ -14,14 +13,12 @@ import {
   CheckCircle2,
   HelpCircle,
   DollarSign,
-  ArrowRight,
 } from "lucide-react";
 import { AppSettings, CalculationEvaluation, JobOffer } from "@/types";
 import {
   formatCurrency,
   formatNumber,
   getAvailabilityBadge,
-  getSafetyBadge,
   getSecondJobBadge,
 } from "@/lib/formatters";
 
@@ -49,7 +46,6 @@ export function JobCard({
   onViewDetails,
 }: JobCardProps) {
   const avail = getAvailabilityBadge(job.availabilityStatus);
-  const safety = getSafetyBadge(job.safetyAssessment?.level, job.safetyAssessment?.score);
   const secondJob = getSecondJobBadge(job.secondJobInfo?.feasibility, job.secondJobInfo?.potentialExtraHoursPerWeek);
 
   const isTHB = settings.currencyDisplay === "THB";
@@ -98,55 +94,72 @@ export function JobCard({
               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${avail.className}`}>
                 {avail.label}
               </span>
-              <span className="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
-                {groupLabel[job.jobGroupType] ?? "IEE"}
+              <span className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-medium border border-slate-200">
+                IEE: {groupLabel[job.jobGroupType] || "General"}
               </span>
               {job.isDemo && (
-                <span className="text-[10px] bg-amber-50 text-amber-700 font-medium px-1.5 py-0.5 rounded border border-amber-200">
-                  ข้อมูลจำลอง
+                <span className="text-[10px] bg-amber-50 text-amber-800 font-semibold px-1.5 py-0.2 rounded border border-amber-200">
+                  Demo
                 </span>
               )}
             </div>
-            <h3 className="text-sm font-black text-slate-900 leading-tight truncate">{job.jobTitle}</h3>
-            <p className="text-xs text-slate-500 truncate">{job.employerName}</p>
-          </div>
-
-          {/* Wage highlight */}
-          <div className="shrink-0 text-center bg-sky-600 text-white rounded-xl px-3 py-2 shadow-sm">
-            <div className="text-[10px] font-medium opacity-80">ค่าจ้าง/ชม.</div>
-            <div className="text-xl font-black leading-none">${job.hourlyWageUSD ?? "?"}</div>
-            <div className="text-[10px] opacity-75">≈ ฿{formatNumber((job.hourlyWageUSD ?? 0) * settings.exchangeRateTHBPerUSD, 0)}</div>
+            <h3 className="font-bold text-slate-900 text-sm leading-snug truncate" title={job.jobTitle}>
+              {job.jobTitle}
+            </h3>
+            <p className="text-xs text-slate-500 truncate" title={job.employerName}>
+              {job.employerName}
+            </p>
           </div>
         </div>
 
-        {/* Location & Duration strip */}
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-500">
+        {/* Location & Dates */}
+        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 pt-1 border-t border-slate-100">
           <span className="flex items-center gap-1">
-            <MapPin className="w-3 h-3 text-slate-400" />
-            {job.city}, {job.state}
+            <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <span className="truncate max-w-[140px]">{job.city}, {job.state}</span>
           </span>
           <span className="flex items-center gap-1">
-            <Calendar className="w-3 h-3 text-slate-400" />
-            {evaluation.durationDays > 0 ? `${evaluation.durationDays} วัน (${evaluation.durationWeeks} สัปดาห์)` : "ยังไม่ระบุวัน"}
-          </span>
-          <span className="flex items-center gap-1">
-            <Clock className="w-3 h-3 text-slate-400" />
-            {job.expectedHoursPerWeek ?? "?"} ชม./สัปดาห์
+            <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <span>
+              {evaluation.durationWeeks > 0
+                ? `${evaluation.durationWeeks} สัปดาห์ (${evaluation.durationDays} วัน)`
+                : "ยังไม่ระบุวัน"}
+            </span>
           </span>
         </div>
       </div>
 
-      {/* ===== DECISION ZONE ===== */}
-      <div className="px-4 pb-3 space-y-2.5">
-        {/* Decision Verdict Banner */}
-        <div className={`rounded-lg border px-3 py-2.5 ${
-          verdict ? `${verdict.bg} ${verdict.border}` : "bg-slate-50 border-slate-200"
+      {/* ===== KEY METRICS STRIP ===== */}
+      <div className="px-4 py-2 bg-slate-50 border-y border-slate-100 flex items-center justify-between text-xs">
+        <div className="flex items-center gap-1.5">
+          <DollarSign className="w-3.5 h-3.5 text-sky-700 shrink-0" />
+          <span className="font-bold text-sky-900 text-sm">
+            {job.hourlyWageUSD !== undefined ? `$${formatNumber(job.hourlyWageUSD, 2)}` : "-"}
+          </span>
+          <span className="text-slate-500 text-[11px]">/ชม.</span>
+        </div>
+        <div className="flex items-center gap-1 text-slate-600">
+          <Clock className="w-3.5 h-3.5 text-slate-400" />
+          <span className="font-semibold text-slate-800">
+            {job.expectedHoursPerWeek !== undefined ? `${job.expectedHoursPerWeek} ชม.` : "-"}
+          </span>
+          <span className="text-slate-500 text-[11px]">/สัปดาห์</span>
+        </div>
+      </div>
+
+      {/* ===== BODY: BREAK-EVEN & FINANCIALS ===== */}
+      <div className="p-4 space-y-3 flex-1 flex flex-col justify-between">
+        {/* Break-Even Indicator */}
+        <div className={`p-3 rounded-lg border text-xs ${
+          evaluation.isComplete && verdict
+            ? `${verdict.bg} ${verdict.border}`
+            : "bg-slate-50 border-slate-200"
         }`}>
           {evaluation.isComplete && verdict ? (
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <span className={`text-xs font-bold flex items-center gap-1.5 ${verdict.text}`}>
-                  {verdict.color === "emerald" ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
+                <span className={`font-bold inline-flex items-center gap-1 ${verdict.text}`}>
+                  <TrendingUp className="w-3.5 h-3.5" />
                   {verdict.label}
                 </span>
                 <span className={`text-[11px] font-medium ${verdict.text}`}>
@@ -198,22 +211,17 @@ export function JobCard({
           )}
         </div>
 
-        {/* 3 Decision Factors row */}
-        <div className="grid grid-cols-3 gap-1.5">
-          {/* City Safety */}
-          <div className={`p-2 rounded-lg border text-center text-[10px] ${safety.className}`}>
-            <div className="font-bold text-[11px] mb-0.5">🛡️ ปลอดภัย</div>
-            <div className="font-black text-sm leading-none">{job.safetyAssessment?.score?.toFixed(1) ?? "?"}</div>
-            <div className="text-[10px] opacity-80 truncate">{safety.label}</div>
-          </div>
-
+        {/* 2 Decision Factors row */}
+        <div className="grid grid-cols-2 gap-1.5">
           {/* Second Job */}
           <div className={`p-2 rounded-lg border text-center text-[10px] ${secondJob.className}`}>
             <div className="font-bold text-[11px] mb-0.5">💼 งานสอง</div>
             <div className="font-black text-xs leading-none mt-1">
               {job.secondJobInfo?.potentialExtraHoursPerWeek ? `+${job.secondJobInfo.potentialExtraHoursPerWeek} ชม.` : secondJob.label}
             </div>
-            <div className="text-[10px] opacity-80">{job.secondJobInfo?.feasibility === "high" ? "โอกาสสูง" : job.secondJobInfo?.feasibility === "medium" ? "ปานกลาง" : secondJob.label}</div>
+            <div className="text-[10px] opacity-80 mt-0.5">
+              {job.secondJobInfo?.feasibility === "high" ? "โอกาสสูง" : job.secondJobInfo?.feasibility === "medium" ? "ปานกลาง" : secondJob.label}
+            </div>
           </div>
 
           {/* Net Return */}
@@ -228,29 +236,45 @@ export function JobCard({
                 ? (isTHB
                     ? formatCurrency(evaluation.netReturnTHB, "THB")
                     : formatCurrency(evaluation.netReturnUSD, "USD"))
-                : "รอระบุครบ"}
+                : "รอระบุเพิ่ม"}
             </div>
-            <div className="text-[10px] opacity-80">
+            <div className="text-[10px] opacity-80 mt-0.5">
               {evaluation.isComplete ? (evaluation.netReturnUSD >= 0 ? "มีเงินเหลือ" : "เสี่ยงขาดทุน") : "ยังไม่ครบ"}
             </div>
           </div>
         </div>
+
+        {/* City Safety Notes if present */}
+        {job.citySafetyNotes && (
+          <div className="text-[11px] text-slate-600 bg-slate-50 border border-slate-200 rounded-lg p-2 leading-relaxed">
+            <span className="font-bold text-slate-700">ความปลอดภัย: </span>
+            {job.citySafetyNotes}
+          </div>
+        )}
 
         {/* Financial Summary Row */}
         <div className="grid grid-cols-2 gap-1.5">
           <div className="bg-slate-50 border border-slate-200 rounded-lg p-2 text-[10px]">
             <div className="text-slate-500 font-medium">เงินสดก่อนบิน</div>
             <div className="font-bold text-slate-900 text-xs mt-0.5">
-              {isTHB ? formatCurrency(evaluation.upfrontCashTHB, "THB") : formatCurrency(evaluation.upfrontCashUSD, "USD")}
+              {evaluation.isComplete
+                ? (isTHB ? formatCurrency(evaluation.upfrontCashTHB, "THB") : formatCurrency(evaluation.upfrontCashUSD, "USD"))
+                : "รอระบุเพิ่ม"}
             </div>
-            {isBoth && <div className="text-slate-400 text-[10px]">≈ {formatCurrency(evaluation.upfrontCashTHB, "THB")}</div>}
+            {isBoth && evaluation.isComplete && (
+              <div className="text-slate-400 text-[10px]">≈ {formatCurrency(evaluation.upfrontCashTHB, "THB")}</div>
+            )}
           </div>
           <div className="bg-slate-50 border border-slate-200 rounded-lg p-2 text-[10px]">
             <div className="text-slate-500 font-medium">ต้นทุนทริปรวม</div>
             <div className="font-bold text-slate-900 text-xs mt-0.5">
-              {isTHB ? formatCurrency(evaluation.totalModeledCostsTHB, "THB") : formatCurrency(evaluation.totalModeledCostsUSD, "USD")}
+              {evaluation.isComplete
+                ? (isTHB ? formatCurrency(evaluation.totalModeledCostsTHB, "THB") : formatCurrency(evaluation.totalModeledCostsUSD, "USD"))
+                : "รอระบุเพิ่ม"}
             </div>
-            {isBoth && <div className="text-slate-400 text-[10px]">≈ {formatCurrency(evaluation.totalModeledCostsTHB, "THB")}</div>}
+            {isBoth && evaluation.isComplete && (
+              <div className="text-slate-400 text-[10px]">≈ {formatCurrency(evaluation.totalModeledCostsTHB, "THB")}</div>
+            )}
           </div>
         </div>
       </div>

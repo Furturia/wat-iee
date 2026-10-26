@@ -4,13 +4,11 @@ import {
   formatCurrency,
   formatNumber,
   getAvailabilityBadge,
-  getSafetyBadge,
   getSecondJobBadge,
 } from "@/lib/formatters";
 import {
   CheckCircle2,
   AlertTriangle,
-  HelpCircle,
   Eye,
   Edit2,
   Trash2,
@@ -32,7 +30,6 @@ export function JobTableView({
   jobs,
   evaluations,
   settings,
-  rankMetric,
   onEdit,
   onDuplicate,
   onDelete,
@@ -50,7 +47,6 @@ export function JobTableView({
               <th className="py-3 px-4">ตำแหน่งงาน / นายจ้าง</th>
               <th className="py-3 px-3">เมือง / รัฐ</th>
               <th className="py-3 px-3">สถานะ</th>
-              <th className="py-3 px-3">ความปลอดภัย</th>
               <th className="py-3 px-3">โอกาสงาน 2</th>
               <th className="py-3 px-3">ระยะเวลา</th>
               <th className="py-3 px-3 text-right">ค่าจ้าง/ชม.</th>
@@ -65,10 +61,6 @@ export function JobTableView({
             {jobs.map((job, idx) => {
               const ev = evaluations[job.id];
               const avail = getAvailabilityBadge(job.availabilityStatus);
-              const safety = getSafetyBadge(
-                job.safetyAssessment?.level,
-                job.safetyAssessment?.score
-              );
               const secondJob = getSecondJobBadge(
                 job.secondJobInfo?.feasibility,
                 job.secondJobInfo?.potentialExtraHoursPerWeek
@@ -128,16 +120,6 @@ export function JobTableView({
                     </span>
                   </td>
 
-                  {/* Safety */}
-                  <td className="py-3.5 px-3 whitespace-nowrap">
-                    <span
-                      className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded border ${safety.className}`}
-                    >
-                      <span className={`w-1.5 h-1.5 rounded-full ${safety.dotColor}`} />
-                      {safety.label}
-                    </span>
-                  </td>
-
                   {/* Second Job */}
                   <td className="py-3.5 px-3 whitespace-nowrap">
                     <span
@@ -157,12 +139,12 @@ export function JobTableView({
 
                   {/* Wage */}
                   <td className="py-3.5 px-3 text-right font-bold text-sky-700 whitespace-nowrap">
-                    ${formatNumber(job.hourlyWageUSD, 2)}
+                    {job.hourlyWageUSD !== undefined ? `$${formatNumber(job.hourlyWageUSD, 2)}` : "-"}
                   </td>
 
                   {/* Hours */}
                   <td className="py-3.5 px-3 text-right text-slate-700 font-semibold whitespace-nowrap">
-                    {job.expectedHoursPerWeek ?? "-"} ชม.
+                    {job.expectedHoursPerWeek !== undefined ? `${job.expectedHoursPerWeek} ชม.` : "-"}
                   </td>
 
                   {/* Break-even */}
@@ -185,16 +167,18 @@ export function JobTableView({
 
                   {/* Upfront Cash */}
                   <td className="py-3.5 px-3 text-right font-medium text-slate-700 whitespace-nowrap">
-                    {ev
-                      ? isTHB
+                    {ev?.isComplete ? (
+                      isTHB
                         ? formatCurrency(ev.upfrontCashTHB, "THB")
                         : formatCurrency(ev.upfrontCashUSD, "USD")
-                      : "-"}
+                    ) : (
+                      <span className="text-amber-600 font-medium">รอระบุเพิ่ม</span>
+                    )}
                   </td>
 
                   {/* Net Return */}
                   <td className="py-3.5 px-3 text-right whitespace-nowrap">
-                    {ev ? (
+                    {ev?.isComplete ? (
                       <span
                         className={`font-bold ${
                           ev.netReturnUSD >= 0 ? "text-emerald-700" : "text-rose-700"
@@ -205,7 +189,7 @@ export function JobTableView({
                           : formatCurrency(ev.netReturnUSD, "USD")}
                       </span>
                     ) : (
-                      "-"
+                      <span className="text-amber-600 font-medium">รอระบุเพิ่ม</span>
                     )}
                   </td>
 
@@ -251,4 +235,3 @@ export function JobTableView({
     </div>
   );
 }
-

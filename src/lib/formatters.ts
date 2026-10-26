@@ -1,4 +1,4 @@
-import { AvailabilityStatus, SafetyLevel, SecondJobFeasibility } from "@/types";
+import { AvailabilityStatus, SecondJobFeasibility } from "@/types";
 
 export function formatCurrency(
   amount: number | undefined,
@@ -91,45 +91,6 @@ export function getAvailabilityBadge(status: AvailabilityStatus): {
   }
 }
 
-export function getSafetyBadge(level?: SafetyLevel, score?: number): {
-  label: string;
-  subText: string;
-  className: string;
-  dotColor: string;
-} {
-  switch (level) {
-    case "safe":
-      return {
-        label: "ปลอดภัยสูง",
-        subText: score ? `คะแนน ${score}/5` : "ความเสี่ยงต่ำ",
-        className: "bg-emerald-50 text-emerald-800 border-emerald-300",
-        dotColor: "bg-emerald-500",
-      };
-    case "moderate":
-      return {
-        label: "ปลอดภัยปานกลาง",
-        subText: score ? `คะแนน ${score}/5` : "ควรระวังบางพื้นที่",
-        className: "bg-amber-50 text-amber-800 border-amber-300",
-        dotColor: "bg-amber-500",
-      };
-    case "caution":
-      return {
-        label: "ควรระมัดระวัง",
-        subText: score ? `คะแนน ${score}/5` : "มีรายงานความเสี่ยง",
-        className: "bg-rose-50 text-rose-800 border-rose-300",
-        dotColor: "bg-rose-500",
-      };
-    case "unknown":
-    default:
-      return {
-        label: "ยังไม่มีข้อมูลความปลอดภัย",
-        subText: "รอผู้ใช้ตรวจสอบ",
-        className: "bg-slate-100 text-slate-700 border-slate-300",
-        dotColor: "bg-slate-400",
-      };
-  }
-}
-
 export function getSecondJobBadge(feasibility?: SecondJobFeasibility, extraHours?: number): {
   label: string;
   subText: string;
@@ -175,4 +136,3 @@ export function getSecondJobBadge(feasibility?: SecondJobFeasibility, extraHours
       };
   }
 }
-

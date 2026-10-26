@@ -63,30 +63,23 @@ export default function HomePage() {
       if (stored) {
         const parsed: AppDataV1 = JSON.parse(stored);
         if (parsed && Array.isArray(parsed.jobs)) {
-          // If stored data contains only old fictional demo jobs, automatically upgrade to real IEE jobs
-          const hasOnlyFictionalDemo =
-            parsed.jobs.length > 0 &&
-            parsed.jobs.every((j) => j.id.startsWith("fictional-job-"));
-
-          if (!hasOnlyFictionalDemo && parsed.jobs.length > 0) {
-            setJobs(parsed.jobs);
-            if (parsed.settings) {
-              setSettings((prev) => ({
-                ...prev,
-                ...parsed.settings,
-                applyGlobalDatesToAll: parsed.settings.applyGlobalDatesToAll ?? true,
-              }));
-            }
-            setIsLoaded(true);
-            return;
+          setJobs(parsed.jobs);
+          if (parsed.settings) {
+            setSettings((prev) => ({
+              ...prev,
+              ...parsed.settings,
+              applyGlobalDatesToAll: parsed.settings.applyGlobalDatesToAll ?? true,
+            }));
           }
+          setIsLoaded(true);
+          return;
         }
       }
-    } catch (e) {
-      console.warn("Could not load from localStorage, falling back to IEE real jobs", e);
+    } catch {
+      // Ignore read error
     }
-    // Default to actual IEE Thailand jobs
-    setJobs(IEE_REAL_JOBS);
+    // Start with empty state by default so user can choose to add or load
+    setJobs([]);
     setIsLoaded(true);
   }, []);
 
@@ -100,8 +93,8 @@ export default function HomePage() {
         jobs,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
-    } catch (e) {
-      console.warn("Could not persist to localStorage", e);
+    } catch {
+      // Ignore localStorage write error
     }
   }, [jobs, settings, isLoaded]);
 
@@ -152,21 +145,6 @@ export default function HomePage() {
           const upA = evalA?.upfrontCashUSD ?? 999999;
           const upB = evalB?.upfrontCashUSD ?? 999999;
           return upA - upB;
-        }
-        case "safety_desc": {
-          const scoreMap: Record<string, number> = {
-            safe: 4,
-            moderate: 3,
-            caution: 2,
-            unknown: 1,
-          };
-          const scoreA =
-            (a.safetyAssessment?.score ?? 0) +
-            (scoreMap[a.safetyAssessment?.level || "unknown"] || 0) * 10;
-          const scoreB =
-            (b.safetyAssessment?.score ?? 0) +
-            (scoreMap[b.safetyAssessment?.level || "unknown"] || 0) * 10;
-          return scoreB - scoreA;
         }
         case "second_job_desc": {
           const secMap: Record<string, number> = {
@@ -450,7 +428,6 @@ export default function HomePage() {
                 rankMetric={
                   sortMetric === "break_even_asc" ? "คืนทุนเร็ว" :
                   sortMetric === "net_return_desc" ? "กำไรสูง" :
-                  sortMetric === "safety_desc" ? "ปลอดภัย" :
                   sortMetric === "second_job_desc" ? "งาน2" :
                   sortMetric === "wage_desc" ? "ค่าจ้างสูง" :
                   sortMetric === "upfront_cash_asc" ? "เตรียมเงินน้อย" : ""
@@ -470,7 +447,6 @@ export default function HomePage() {
             rankMetric={
               sortMetric === "break_even_asc" ? "คืนทุนเร็ว" :
               sortMetric === "net_return_desc" ? "กำไรสูง" :
-              sortMetric === "safety_desc" ? "ปลอดภัย" :
               sortMetric === "second_job_desc" ? "งาน2" :
               sortMetric === "wage_desc" ? "ค่าจ้างสูง" :
               sortMetric === "upfront_cash_asc" ? "เตรียมเงินน้อย" : ""

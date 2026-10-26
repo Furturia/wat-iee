@@ -10,6 +10,46 @@ interface ExportImportModalProps {
   onImportSuccess: (data: AppDataV1) => void;
 }
 
+export function validateImportedJobs(jobs: any[]): { isValid: boolean; error?: string } {
+  if (!Array.isArray(jobs)) {
+    return { isValid: false, error: "โครงสร้างข้อมูลผิดพลาด: ข้อมูล jobs ต้องเป็น Array" };
+  }
+  if (jobs.length === 0) {
+    return { isValid: false, error: "ไม่พบรายการงานในไฟล์ที่นำเข้า" };
+  }
+
+  for (let i = 0; i < jobs.length; i++) {
+    const job = jobs[i];
+    const prefix = `รายการที่ ${i + 1}`;
+    if (!job || typeof job !== "object") {
+      return { isValid: false, error: `${prefix}: ข้อมูลไม่ถูกต้อง (ไม่ใช่ Object)` };
+    }
+    if (!job.id || typeof job.id !== "string") {
+      return { isValid: false, error: `${prefix}: ขาดรหัส id หรือรูปแบบ id ไม่ถูกต้อง` };
+    }
+    if (!job.employerName || typeof job.employerName !== "string") {
+      return { isValid: false, error: `${prefix} (${job.id}): ขาดชื่อนายจ้าง (employerName)` };
+    }
+    if (!job.jobTitle || typeof job.jobTitle !== "string") {
+      return { isValid: false, error: `${prefix} (${job.id}): ขาดชื่อตำแหน่งงาน (jobTitle)` };
+    }
+    if (!job.jobGroupType || typeof job.jobGroupType !== "string") {
+      return { isValid: false, error: `${prefix} (${job.id}): ขาดกลุ่มงาน (jobGroupType)` };
+    }
+    if (!job.availabilityStatus || typeof job.availabilityStatus !== "string") {
+      return { isValid: false, error: `${prefix} (${job.id}): ขาดสถานะการรับสมัคร (availabilityStatus)` };
+    }
+    if (!Array.isArray(job.oneTimeCosts)) {
+      return { isValid: false, error: `${prefix} (${job.id}): ค่าใช้จ่ายก้อนเดียว (oneTimeCosts) ต้องเป็น Array` };
+    }
+    if (!Array.isArray(job.weeklyCosts)) {
+      return { isValid: false, error: `${prefix} (${job.id}): ค่าใช้จ่ายรายสัปดาห์ (weeklyCosts) ต้องเป็น Array` };
+    }
+  }
+
+  return { isValid: true };
+}
+
 export function ExportImportModal({
   isOpen,
   onClose,
@@ -61,6 +101,11 @@ export function ExportImportModal({
 
       if (!Array.isArray(parsed.jobs)) {
         throw new Error("โครงสร้างข้อมูลผิดพลาด: ไม่พบรายการ jobs");
+      }
+
+      const validation = validateImportedJobs(parsed.jobs);
+      if (!validation.isValid) {
+        throw new Error(validation.error || "ข้อมูลรายการงานไม่ถูกต้องตาม Schema");
       }
 
       const importedData: AppDataV1 = {
@@ -174,4 +219,3 @@ export function ExportImportModal({
     </div>
   );
 }
-

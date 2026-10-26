@@ -1,5 +1,5 @@
 import React from "react";
-import { X, BookOpen, AlertCircle, Sparkles, CheckCircle2 } from "lucide-react";
+import { X, BookOpen, AlertCircle, Sparkles } from "lucide-react";
 import { feeConfig, isPromotionActive } from "@/lib/fee-config";
 
 interface FeeRulesModalProps {
@@ -11,12 +11,7 @@ export function FeeRulesModal({ isOpen, onClose }: FeeRulesModalProps) {
   if (!isOpen) return null;
 
   const promo = isPromotionActive();
-  const groups = [
-    { key: "classic", ...feeConfig.groupTypes.classic },
-    { key: "signature", ...feeConfig.groupTypes.signature },
-    { key: "exclusive", ...feeConfig.groupTypes.exclusive },
-    { key: "ultimate", ...feeConfig.groupTypes.ultimate },
-  ];
+  const groupKeys = ["classic", "signature", "exclusive", "ultimate"] as const;
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
@@ -77,65 +72,144 @@ export function FeeRulesModal({ isOpen, onClose }: FeeRulesModalProps) {
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold">
                     <th className="py-2.5 px-3">รายการค่าใช้จ่าย</th>
-                    <th className="py-2.5 px-3 text-right">IEE Classic</th>
-                    <th className="py-2.5 px-3 text-right">IEE Signature</th>
-                    <th className="py-2.5 px-3 text-right">IEE Exclusive</th>
-                    <th className="py-2.5 px-3 text-right bg-sky-50/60 text-sky-950 font-black">
-                      IEE Ultimate
-                    </th>
+                    {groupKeys.map((key) => {
+                      const group = feeConfig.groupTypes[key];
+                      const isUltimate = key === "ultimate";
+                      return (
+                        <th
+                          key={key}
+                          className={`py-2.5 px-3 text-right ${
+                            isUltimate
+                              ? "bg-sky-50/60 text-sky-950 font-black"
+                              : ""
+                          }`}
+                        >
+                          {group.labelTh}
+                        </th>
+                      );
+                    })}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
+                  {/* ค่าสมัคร */}
                   <tr>
                     <td className="py-2 px-3 text-slate-600 font-medium">ค่าสมัคร (Application)</td>
-                    <td className="py-2 px-3 text-right">7,900 ฿</td>
-                    <td className="py-2 px-3 text-right">7,900 ฿</td>
-                    <td className="py-2 px-3 text-right">7,900 ฿</td>
-                    <td className="py-2 px-3 text-right bg-sky-50/30 font-bold text-slate-900">9,900 ฿</td>
+                    {groupKeys.map((key) => (
+                      <td
+                        key={key}
+                        className={`py-2 px-3 text-right ${
+                          key === "ultimate" ? "bg-sky-50/30 font-bold text-slate-900" : ""
+                        }`}
+                      >
+                        {feeConfig.groupTypes[key].fees.applicationFeeTHB?.toLocaleString()} ฿
+                      </td>
+                    ))}
                   </tr>
+
+                  {/* ส่วนที่ 1 */}
                   <tr>
                     <td className="py-2 px-3 text-slate-600 font-medium">ค่าโครงการ ส่วนที่ 1</td>
-                    <td className="py-2 px-3 text-right">20,000 ฿</td>
-                    <td className="py-2 px-3 text-right">20,000 ฿</td>
-                    <td className="py-2 px-3 text-right">20,000 ฿</td>
-                    <td className="py-2 px-3 text-right bg-sky-50/30 font-bold text-slate-900">20,000 ฿</td>
+                    {groupKeys.map((key) => (
+                      <td
+                        key={key}
+                        className={`py-2 px-3 text-right ${
+                          key === "ultimate" ? "bg-sky-50/30 font-bold text-slate-900" : ""
+                        }`}
+                      >
+                        {feeConfig.groupTypes[key].fees.programFeePart1THB?.toLocaleString()} ฿
+                      </td>
+                    ))}
                   </tr>
+
+                  {/* ส่วนที่ 2 */}
                   <tr className="bg-amber-50/30 font-semibold">
                     <td className="py-2 px-3 text-amber-900">ค่าโครงการ ส่วนที่ 2</td>
-                    <td className="py-2 px-3 text-right text-amber-900">59,900 ฿</td>
-                    <td className="py-2 px-3 text-right text-amber-900">54,900 ฿</td>
-                    <td className="py-2 px-3 text-right text-amber-900">59,900 ฿</td>
-                    <td className="py-2 px-3 text-right bg-sky-50/40 text-amber-950 font-bold">63,900 ฿</td>
+                    {groupKeys.map((key) => (
+                      <td
+                        key={key}
+                        className={`py-2 px-3 text-right ${
+                          key === "ultimate"
+                            ? "bg-sky-50/40 text-amber-950 font-bold"
+                            : "text-amber-900"
+                        }`}
+                      >
+                        {feeConfig.groupTypes[key].fees.programFeePart2THB?.toLocaleString()} ฿
+                      </td>
+                    ))}
                   </tr>
+
+                  {/* ค่าดำเนินการกลุ่มงาน */}
                   <tr>
                     <td className="py-2 px-3 text-slate-600 font-medium">ค่าดำเนินการกลุ่มงาน</td>
-                    <td className="py-2 px-3 text-right text-emerald-700 font-bold">0 ฿ (ไม่มี)</td>
-                    <td className="py-2 px-3 text-right">8,000 ฿</td>
-                    <td className="py-2 px-3 text-right">8,000 ฿</td>
-                    <td className="py-2 px-3 text-right bg-sky-50/30 font-bold text-slate-900">8,000 ฿</td>
+                    {groupKeys.map((key) => {
+                      const amount = feeConfig.groupTypes[key].fees.groupProcessingFeeTHB;
+                      return (
+                        <td
+                          key={key}
+                          className={`py-2 px-3 text-right ${
+                            amount === 0
+                              ? "text-emerald-700 font-bold"
+                              : key === "ultimate"
+                              ? "bg-sky-50/30 font-bold text-slate-900"
+                              : ""
+                          }`}
+                        >
+                          {amount && amount > 0 ? `${amount.toLocaleString()} ฿` : "0 ฿ (ไม่มี)"}
+                        </td>
+                      );
+                    })}
                   </tr>
+
+                  {/* SEVIS */}
                   <tr>
                     <td className="py-2 px-3 text-slate-600 font-medium">ค่า SEVIS Fee</td>
-                    <td className="py-2 px-3 text-right">3,900 ฿</td>
-                    <td className="py-2 px-3 text-right">3,900 ฿</td>
-                    <td className="py-2 px-3 text-right">3,900 ฿</td>
-                    <td className="py-2 px-3 text-right bg-sky-50/30 font-bold text-slate-900">3,900 ฿</td>
+                    {groupKeys.map((key) => (
+                      <td
+                        key={key}
+                        className={`py-2 px-3 text-right ${
+                          key === "ultimate" ? "bg-sky-50/30 font-bold text-slate-900" : ""
+                        }`}
+                      >
+                        {feeConfig.groupTypes[key].fees.sevisFeeTHB?.toLocaleString()} ฿
+                      </td>
+                    ))}
                   </tr>
+
+                  {/* Visa */}
                   <tr>
                     <td className="py-2 px-3 text-slate-600 font-medium">ค่าวีซ่า (DS-160)</td>
-                    <td className="py-2 px-3 text-right font-medium">$185</td>
-                    <td className="py-2 px-3 text-right font-medium">$185</td>
-                    <td className="py-2 px-3 text-right font-medium">$185</td>
-                    <td className="py-2 px-3 text-right bg-sky-50/30 font-bold text-slate-900">$185</td>
+                    {groupKeys.map((key) => (
+                      <td
+                        key={key}
+                        className={`py-2 px-3 text-right font-medium ${
+                          key === "ultimate" ? "bg-sky-50/30 font-bold text-slate-900" : ""
+                        }`}
+                      >
+                        ${feeConfig.groupTypes[key].fees.visaFeeUSD ?? 185}
+                      </td>
+                    ))}
                   </tr>
+
+                  {/* รวม */}
                   <tr className="bg-slate-100 font-black text-slate-900 border-t-2 border-slate-300">
                     <td className="py-2.5 px-3">รวมค่าธรรมเนียมคงที่</td>
-                    <td className="py-2.5 px-3 text-right">91,700 ฿ + $185</td>
-                    <td className="py-2.5 px-3 text-right">94,700 ฿ + $185</td>
-                    <td className="py-2.5 px-3 text-right">99,700 ฿ + $185</td>
-                    <td className="py-2.5 px-3 text-right bg-sky-100/70 text-sky-950 font-black">
-                      105,700 ฿ + $185
-                    </td>
+                    {groupKeys.map((key) => {
+                      const group = feeConfig.groupTypes[key];
+                      const visa = group.fees.visaFeeUSD ?? 185;
+                      const isUltimate = key === "ultimate";
+                      return (
+                        <td
+                          key={key}
+                          className={`py-2.5 px-3 text-right ${
+                            isUltimate
+                              ? "bg-sky-100/70 text-sky-950 font-black"
+                              : ""
+                          }`}
+                        >
+                          {group.knownFixedFeeSubtotalTHB.toLocaleString()} ฿ + ${visa}
+                        </td>
+                      );
+                    })}
                   </tr>
                 </tbody>
               </table>

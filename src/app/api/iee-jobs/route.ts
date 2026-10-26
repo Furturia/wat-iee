@@ -8,8 +8,6 @@ export const maxDuration = 30;
 const LISTING_URL = "https://www.ieethailand.com/work-and-travel-new/";
 
 export async function GET() {
-  console.log("[API /api/iee-jobs] Fetching live listings from:", LISTING_URL);
-  const startTime = Date.now();
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 20000);
@@ -25,13 +23,9 @@ export async function GET() {
     });
     clearTimeout(timeout);
 
-    console.log(`[API /api/iee-jobs] Response status: ${response.status} in ${Date.now() - startTime}ms`);
-
     if (response.ok) {
       const text = await response.text();
-      console.log(`[API /api/iee-jobs] HTML size: ${(text.length / 1024).toFixed(1)} KB`);
       const listings = parseIEEEmployerListings(text);
-      console.log(`[API /api/iee-jobs] Successfully parsed ${listings.length} unique employer listings`);
 
       if (listings.length > 0) {
         return NextResponse.json({
@@ -40,15 +34,12 @@ export async function GET() {
           listings,
         });
       }
-    } else {
-      console.warn(`[API /api/iee-jobs] Fetch returned status ${response.status}`);
     }
-  } catch (error) {
-    console.error("[API /api/iee-jobs] Live IEE fetch failed, serving snapshot dataset. Reason:", error);
+  } catch {
+    // Live fetch failed, fallback to snapshot
   }
 
   // Use the complete 74 employers snapshot dataset scraped from IEE Thailand
-  console.log(`[API /api/iee-jobs] Serving verified snapshot of ${snapshotListings.length} employers`);
   return NextResponse.json({
     sourceUrl: LISTING_URL,
     checkedAt: new Date().toISOString(),

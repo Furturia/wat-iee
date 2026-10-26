@@ -1,7 +1,6 @@
 export type VerificationStatus = "verified" | "user_entered" | "estimated" | "unknown";
 export type AvailabilityStatus = "open" | "limited" | "full" | "closed" | "unknown";
 export type JobGroupType = "classic" | "signature" | "exclusive" | "ultimate" | "other";
-export type SafetyLevel = "safe" | "moderate" | "caution" | "unknown";
 export type SecondJobFeasibility = "high" | "medium" | "low" | "prohibited" | "unknown";
 
 export interface DataSource {
@@ -33,13 +32,6 @@ export interface WeeklyCostInput {
   label: string;
   category?: "housing" | "food" | "transport" | "phone" | "other";
   source?: DataSource;
-}
-
-export interface SafetyAssessment {
-  level: SafetyLevel;
-  score?: number; // 1 to 5 (5 is safest)
-  notes?: string;
-  sourceName?: string;
 }
 
 export interface SecondJobInfo {
@@ -75,7 +67,7 @@ export interface JobOffer {
   highHoursPerWeek?: number;
   
   // Safety & 2nd job
-  safetyAssessment?: SafetyAssessment;
+  citySafetyNotes?: string;
   secondJobInfo?: SecondJobInfo;
 
   // Costs
@@ -172,6 +164,4 @@ export type SortMetric =
   | "net_return_desc"
   | "wage_desc"
   | "upfront_cash_asc"
-  | "safety_desc"
   | "second_job_desc";
-

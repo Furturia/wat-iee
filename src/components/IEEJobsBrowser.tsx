@@ -41,15 +41,15 @@ interface IEEPositionsResponse {
   positions: IEEPosition[];
 }
 
-function parseHourlyWage(value: string | null): number {
-  if (!value) return 16.0;
+function parseHourlyWage(value: string | null): number | undefined {
+  if (!value) return undefined;
   // Match e.g. "$16.50", "$16-$18", "16", "17.00 / hour"
   const match = value.match(/\$?\s*(\d+(?:\.\d+)?)/);
   if (match) {
     const num = parseFloat(match[1]);
     if (!isNaN(num) && num > 0) return num;
   }
-  return 16.0;
+  return undefined;
 }
 
 function makeJobOffer(
@@ -77,11 +77,11 @@ function makeJobOffer(
       category: "airfare" as const,
       label: "ค่าตั๋วเครื่องบินไป-กลับ (ประมาณการ)",
       currency: "THB" as const,
-      amount: 36000,
+      amount: undefined,
       paidUpfront: true,
       source: {
-        status: "estimated" as const,
-        notes: "ตั๋วเครื่องบินประมาณการ กรุงเทพฯ - สหรัฐฯ",
+        status: "unknown" as const,
+        notes: "รอผู้ใช้ระบุราคาตั๋วเครื่องบินจริงตามสายการบินที่เลือก",
       },
     },
   ];
@@ -124,37 +124,17 @@ function makeJobOffer(
     lowHoursPerWeek: 30,
     highHoursPerWeek: 40,
     estimatedDeductionRate: 0.1,
-    safetyAssessment: {
-      level: "safe",
-      score: 4.4,
-      notes: `สภาพแวดล้อมบริเวณ ${city}, ${state} มีความปลอดภัยและสิ่งอำนวยความสะดวก`,
-      sourceName: "IEE Location Review",
-    },
+    citySafetyNotes: undefined,
     secondJobInfo: {
       feasibility: "high",
       potentialExtraHoursPerWeek: 12,
-      potentialExtraWageUSD: Math.max(14.0, wage - 1.0),
+      potentialExtraWageUSD: wage ? Math.max(14.0, wage - 1.0) : undefined,
       notes: "เมืองท่องเที่ยว มีร้านอาหาร ซูเปอร์มาร์เก็ต และคาเฟ่รับงานสองเยอะ",
     },
     oneTimeCosts,
-    weeklyCosts: [
-      {
-        id: `housing-${listing.slug}`,
-        category: "housing",
-        label: "ค่าที่พัก (Employer/Dorm Housing)",
-        currency: "USD",
-        amount: 120,
-      },
-      {
-        id: `food-${listing.slug}`,
-        category: "food",
-        label: "ค่าอาหารและของใช้ส่วนตัว",
-        currency: "USD",
-        amount: 80,
-      },
-    ],
-    refundableDepositsUSD: 150,
-    emergencyReserveUSD: 300,
+    weeklyCosts: [],
+    refundableDepositsUSD: undefined,
+    emergencyReserveUSD: undefined,
     isDemo: false,
     notes,
     source,
@@ -188,14 +168,12 @@ export function IEEJobsBrowser({
   const loadListings = useCallback(async () => {
     setIsLoading(true);
     setLoadError("");
-    console.log("[IEEJobsBrowser] Requesting /api/iee-jobs ...");
     try {
       const response = await fetch("/api/iee-jobs");
       const data = (await response.json()) as IEEListingsResponse & {
         error?: string;
       };
       if (!response.ok) throw new Error(data.error || "โหลดรายการงานไม่สำเร็จ");
-      console.log(`[IEEJobsBrowser] Received ${data.listings?.length ?? 0} listings from API:`, data);
       setListings(data.listings);
       setCheckedAt(data.checkedAt);
     } catch (error) {

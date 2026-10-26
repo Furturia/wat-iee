@@ -3,12 +3,9 @@ import {
   X,
   MapPin,
   Calendar,
-  DollarSign,
   TrendingUp,
   Shield,
   Briefcase,
-  AlertCircle,
-  CheckCircle2,
   Clock,
 } from "lucide-react";
 import { AppSettings, CalculationEvaluation, JobOffer } from "@/types";
@@ -16,7 +13,6 @@ import {
   formatCurrency,
   formatNumber,
   getAvailabilityBadge,
-  getSafetyBadge,
   getSecondJobBadge,
 } from "@/lib/formatters";
 
@@ -39,10 +35,6 @@ export function JobDetailModal({
 
   const isTHB = settings.currencyDisplay === "THB";
   const avail = getAvailabilityBadge(job.availabilityStatus);
-  const safety = getSafetyBadge(
-    job.safetyAssessment?.level,
-    job.safetyAssessment?.score
-  );
   const secondJob = getSecondJobBadge(
     job.secondJobInfo?.feasibility,
     job.secondJobInfo?.potentialExtraHoursPerWeek
@@ -110,13 +102,18 @@ export function JobDetailModal({
                 เงินสดที่ต้องเตรียมก่อนบิน (Upfront Cash)
               </span>
               <div className="text-base sm:text-lg font-black text-slate-900">
-                {isTHB
-                  ? formatCurrency(evaluation.upfrontCashTHB, "THB")
-                  : formatCurrency(evaluation.upfrontCashUSD, "USD")}
+                {evaluation.isComplete ? (
+                  isTHB
+                    ? formatCurrency(evaluation.upfrontCashTHB, "THB")
+                    : formatCurrency(evaluation.upfrontCashUSD, "USD")
+                ) : (
+                  <span className="text-amber-600 font-bold">รอระบุเพิ่ม</span>
+                )}
               </div>
               <div className="text-[11px] text-slate-500 mt-0.5">
-                รวมมัดจำ ${evaluation.refundableDepositsUSD} + สำรอง $
-                {evaluation.emergencyReserveUSD}
+                {evaluation.isComplete
+                  ? `รวมมัดจำ $${evaluation.refundableDepositsUSD} + สำรอง $${evaluation.emergencyReserveUSD}`
+                  : "รอระบุค่าตั๋วบิน/มัดจำ/สำรอง"}
               </div>
             </div>
 
@@ -125,34 +122,48 @@ export function JobDetailModal({
                 ต้นทุนรวมตลอดทริป (Modeled Costs)
               </span>
               <div className="text-base sm:text-lg font-black text-slate-900">
-                {isTHB
-                  ? formatCurrency(evaluation.totalModeledCostsTHB, "THB")
-                  : formatCurrency(evaluation.totalModeledCostsUSD, "USD")}
+                {evaluation.isComplete ? (
+                  isTHB
+                    ? formatCurrency(evaluation.totalModeledCostsTHB, "THB")
+                    : formatCurrency(evaluation.totalModeledCostsUSD, "USD")
+                ) : (
+                  <span className="text-amber-600 font-bold">รอระบุเพิ่ม</span>
+                )}
               </div>
               <div className="text-[11px] text-slate-500 mt-0.5">
-                รวมค่าธรรมเนียม ตั๋วบิน ที่พัก และอาหาร
+                {evaluation.isComplete
+                  ? "รวมค่าธรรมเนียม ตั๋วบิน ที่พัก และอาหาร"
+                  : "รอระบุต้นทุนให้ครบถ้วน"}
               </div>
             </div>
 
             <div
               className={`p-3.5 rounded-xl border ${
-                evaluation.netReturnUSD >= 0
-                  ? "bg-emerald-50/60 border-emerald-200 text-emerald-900"
-                  : "bg-rose-50/60 border-rose-200 text-rose-900"
+                evaluation.isComplete
+                  ? evaluation.netReturnUSD >= 0
+                    ? "bg-emerald-50/60 border-emerald-200 text-emerald-900"
+                    : "bg-rose-50/60 border-rose-200 text-rose-900"
+                  : "bg-amber-50/60 border-amber-200 text-amber-900"
               }`}
             >
               <span className="text-[11px] opacity-80 block mb-1">
                 เงินเหลือสุทธิโดยประมาณ (Net Return)
               </span>
               <div className="text-base sm:text-lg font-black">
-                {isTHB
-                  ? formatCurrency(evaluation.netReturnTHB, "THB")
-                  : formatCurrency(evaluation.netReturnUSD, "USD")}
+                {evaluation.isComplete ? (
+                  isTHB
+                    ? formatCurrency(evaluation.netReturnTHB, "THB")
+                    : formatCurrency(evaluation.netReturnUSD, "USD")
+                ) : (
+                  <span className="text-amber-700 font-bold">รอระบุเพิ่ม</span>
+                )}
               </div>
               <div className="text-[11px] opacity-80 mt-0.5">
-                {evaluation.netReturnUSD >= 0
-                  ? "คาดว่าคืนทุนและมีเงินเหลือ"
-                  : "เสี่ยงขาดทุนเทียบกับต้นทุนที่ตั้งไว้"}
+                {evaluation.isComplete
+                  ? evaluation.netReturnUSD >= 0
+                    ? "คาดว่าคืนทุนและมีเงินเหลือ"
+                    : "เสี่ยงขาดทุนเทียบกับต้นทุนที่ตั้งไว้"
+                  : "ยังไม่สามารถคำนวณกำไรสุทธิได้"}
               </div>
             </div>
           </div>
@@ -178,25 +189,21 @@ export function JobDetailModal({
                     2
                   )}
                   ) และระยะเวลาทำงานรวม{" "}
-                  <strong>{evaluation.durationWeeks} สัปดาห์</strong>:
+                  <strong>{evaluation.durationWeeks} สัปดาห์</strong>
                 </p>
 
-                <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                <div className="p-3 bg-slate-50 rounded-lg flex items-center justify-between">
                   <div>
-                    <div className="text-slate-500 text-[11px]">
-                      ชั่วโมงทำงานเฉลี่ยที่ต้องการเพื่อคืนทุน:
-                    </div>
-                    <div className="text-lg font-bold text-slate-900">
+                    <div className="text-slate-500 text-[11px]">จุดคืนทุน:</div>
+                    <div className="text-base font-bold text-slate-900">
                       {evaluation.breakEvenHoursPerWeek} ชม./สัปดาห์
                     </div>
                   </div>
 
                   <div>
-                    <div className="text-slate-500 text-[11px]">
-                      ชั่วโมงที่นายจ้างเสนอ/คาดการณ์:
-                    </div>
+                    <div className="text-slate-500 text-[11px]">ชั่วโมงที่คาดการณ์:</div>
                     <div
-                      className={`text-lg font-bold ${
+                      className={`text-base font-bold ${
                         evaluation.isBreakEvenPossibleWithExpectedHours
                           ? "text-emerald-700"
                           : "text-amber-700"
@@ -301,27 +308,27 @@ export function JobDetailModal({
 
                     {/* Expected Scenario */}
                     {evaluation.scenarios.expected && (
-                      <tr className="bg-sky-50/40 font-medium">
-                        <td className="py-2.5 px-3 font-bold text-sky-900">
-                          กรณีตามที่คาดการณ์ (Expected)
+                      <tr className="bg-sky-50/30 hover:bg-sky-50/60 font-semibold">
+                        <td className="py-2.5 px-3 text-sky-950">
+                          กรณีปกติที่คาดไว้ (Expected)
                         </td>
-                        <td className="py-2.5 px-3 text-right font-bold text-sky-900">
+                        <td className="py-2.5 px-3 text-right font-bold text-sky-950">
                           {evaluation.scenarios.expected.hoursPerWeek} ชม.
                         </td>
-                        <td className="py-2.5 px-3 text-right text-slate-800">
+                        <td className="py-2.5 px-3 text-right text-slate-700">
                           {formatCurrency(
                             evaluation.scenarios.expected.grossIncomeUSD,
                             "USD"
                           )}
                         </td>
-                        <td className="py-2.5 px-3 text-right text-slate-800">
+                        <td className="py-2.5 px-3 text-right text-slate-700">
                           {formatCurrency(
                             evaluation.scenarios.expected.estimatedNetIncomeUSD,
                             "USD"
                           )}
                         </td>
                         <td
-                          className={`py-2.5 px-3 text-right font-black ${
+                          className={`py-2.5 px-3 text-right font-bold ${
                             evaluation.scenarios.expected.netReturnUSD >= 0
                               ? "text-emerald-700"
                               : "text-rose-700"
@@ -336,7 +343,7 @@ export function JobDetailModal({
                           {evaluation.scenarios.expected.isBreakEven ? (
                             <span className="text-emerald-700 font-bold">คืนทุน</span>
                           ) : (
-                            <span className="text-rose-700 font-bold">ไม่คืนทุน</span>
+                            <span className="text-rose-700 font-bold">ขาดทุน</span>
                           )}
                         </td>
                       </tr>
@@ -346,7 +353,7 @@ export function JobDetailModal({
                     {evaluation.scenarios.high && (
                       <tr className="hover:bg-slate-50/50">
                         <td className="py-2.5 px-3 font-semibold text-slate-700">
-                          กรณีชั่วโมงพีค (High / Overtime)
+                          กรณีได้ชั่วโมงมาก (High)
                         </td>
                         <td className="py-2.5 px-3 text-right font-medium">
                           {evaluation.scenarios.high.hoursPerWeek} ชม.
@@ -392,17 +399,14 @@ export function JobDetailModal({
 
           {/* Safety & Second Job Details */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className={`p-3.5 rounded-xl border ${safety.className}`}>
-              <div className="font-bold text-sm mb-1 flex items-center gap-1.5">
-                <Shield className="w-4 h-4 shrink-0" />
-                <span>ความปลอดภัยของเมือง: {safety.label}</span>
+            <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50">
+              <div className="font-bold text-sm mb-1 flex items-center gap-1.5 text-slate-800">
+                <Shield className="w-4 h-4 shrink-0 text-slate-500" />
+                <span>บันทึกความปลอดภัยของเมือง</span>
               </div>
-              <p className="text-xs leading-relaxed mb-2">
-                {job.safetyAssessment?.notes || "ยังไม่มีบันทึกรายละเอียด"}
+              <p className="text-xs leading-relaxed text-slate-600">
+                {job.citySafetyNotes || "ยังไม่มีบันทึกรายละเอียด"}
               </p>
-              <div className="text-[10px] opacity-75">
-                แหล่งข้อมูล: {job.safetyAssessment?.sourceName || "User entered"}
-              </div>
             </div>
 
             <div className={`p-3.5 rounded-xl border ${secondJob.className}`}>
@@ -483,4 +487,3 @@ export function JobDetailModal({
     </div>
   );
 }
-

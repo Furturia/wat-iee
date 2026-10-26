@@ -125,7 +125,6 @@ export function GlobalControls({
             >
               <option value="break_even_asc">⚡ คืนทุนเร็วที่สุด (ชม. คืนทุนต่ำสุด)</option>
               <option value="net_return_desc">💰 เงินเหลือสุทธิสูงสุด (กำไรคาดการณ์)</option>
-              <option value="safety_desc">🛡️ เมืองปลอดภัยสูงสุด (Safety Rating)</option>
               <option value="second_job_desc">💼 โอกาสหางานที่สองสูงสุด (Second Job)</option>
               <option value="wage_desc">💵 ค่าจ้างรายชั่วโมงสูงสุด (Hourly Wage)</option>
               <option value="upfront_cash_asc">🛫 เงินสดที่ต้องเตรียมไปน้อยสุด</option>

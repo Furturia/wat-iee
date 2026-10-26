@@ -28,12 +28,7 @@ export const SAMPLE_JOBS: JobOffer[] = [
     lowHoursPerWeek: 30,
     highHoursPerWeek: 40,
     estimatedDeductionRate: 0.1,
-    safetyAssessment: {
-      level: "safe",
-      score: 4.5,
-      notes: "เมืองมหาวิทยาลัยและแหล่งท่องเที่ยว สงบ ปลอดภัย มีรถบัสและทางจักรยาน",
-      sourceName: "สมมติฐานจำลอง (User/Demo Review)",
-    },
+    citySafetyNotes: "เมืองมหาวิทยาลัยและแหล่งท่องเที่ยว สงบ ปลอดภัย มีรถบัสและทางจักรยาน",
     secondJobInfo: {
       feasibility: "medium",
       notes: "มีร้านอาหารและคาเฟ่ในตัวเมือง แต่ต้องเช็ครอบรถรับส่งหรือปั่นจักรยาน",
@@ -110,12 +105,7 @@ export const SAMPLE_JOBS: JobOffer[] = [
     lowHoursPerWeek: 32,
     highHoursPerWeek: 45,
     estimatedDeductionRate: 0.1,
-    safetyAssessment: {
-      level: "safe",
-      score: 4.8,
-      notes: "เมืองฮิตของเด็ก Work & Travel ปลอดภัยสูง มีชุมชนนักศึกษาและคนไทยเยอะ",
-      sourceName: "สมมติฐานจำลอง (User/Demo Review)",
-    },
+    citySafetyNotes: "เมืองฮิตของเด็ก Work & Travel ปลอดภัยสูง มีชุมชนนักศึกษาและคนไทยเยอะ",
     secondJobInfo: {
       feasibility: "high",
       notes: "โอกาสหางาน 2 สูงมาก ร้านอาหาร Fast Food, Outlet, ร้านไอศกรีมเปิดรับเด็ก WAT เพียบ",
@@ -192,12 +182,7 @@ export const SAMPLE_JOBS: JobOffer[] = [
     lowHoursPerWeek: 28,
     highHoursPerWeek: 38,
     estimatedDeductionRate: 0.1,
-    safetyAssessment: {
-      level: "moderate",
-      score: 3.5,
-      notes: "เมืองชายหาดคึกคัก ปลอดภัยช่วงกลางวัน ควรระวังตอนดึกบนถนนสายหลัก",
-      sourceName: "สมมติฐานจำลอง (User/Demo Review)",
-    },
+    citySafetyNotes: "เมืองชายหาดคึกคัก ปลอดภัยช่วงกลางวัน ควรระวังตอนดึกบนถนนสายหลัก",
     secondJobInfo: {
       feasibility: "high",
       notes: "มีร้านอาหารและคาเฟ่ริมหาดรับงานสอง แต่ชั่วโมงหลักอาจมีกะเย็น",
@@ -264,12 +249,7 @@ export const SAMPLE_JOBS: JobOffer[] = [
     minimumHoursPerWeek: 32,
     maximumHoursPerWeek: 40,
     estimatedDeductionRate: 0.1,
-    safetyAssessment: {
-      level: "moderate",
-      score: 3.8,
-      notes: "เมืองใหญ่ เดินทางสะดวกด้วย Light Rail แต่ต้องระวังโซนใจกลางเมืองยามวิกาล",
-      sourceName: "สมมติฐานจำลอง (User/Demo Review)",
-    },
+    citySafetyNotes: "เมืองใหญ่ เดินทางสะดวกด้วย Light Rail แต่ต้องระวังโซนใจกลางเมืองยามวิกาล",
     secondJobInfo: {
       feasibility: "medium",
       notes: "งานสองมีเยอะในเมืองใหญ่ แต่เวลาเดินทางอาจกระทบกะหลัก",
