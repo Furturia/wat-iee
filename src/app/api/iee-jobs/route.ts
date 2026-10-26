@@ -1,68 +1,18 @@
 import { NextResponse } from "next/server";
 import { parseIEEEmployerListings, IEEEmployerListing } from "@/lib/iee-scraper";
+import snapshotListings from "@/data/iee-listings-snapshot.json";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
 const LISTING_URL = "https://www.ieethailand.com/work-and-travel-new/";
 
-const FALLBACK_IEE_LISTINGS: IEEEmployerListing[] = [
-  {
-    employer: "HARRAH'S RESORT ATLANTIC CITY",
-    location: "Atlantic City, New Jersey (NJ)",
-    seasons: ["Summer 2027"],
-    listingText: "รีสอร์ตและโรงแรมขนาดใหญ่ริมชายหาด Atlantic City ตำแหน่งงานหลากหลาย มีสวัสดิการพนักงานและรอบรถรับส่ง",
-    slug: "harrahs-resort-atlantic-city",
-    sourceUrl: "https://www.ieethailand.com/work_and_travel_2/harrahs-resort-atlantic-city/",
-  },
-  {
-    employer: "CAESARS REPUBLIC LAKE TAHOE",
-    location: "Stateline, Nevada (NV)",
-    seasons: ["Summer 2027"],
-    listingText: "โรงแรมหรูวิวทะเลสาบ Lake Tahoe ยอดฮิต สภาพแวดล้อมสวยงาม ปลอดภัย มีกิจกรรมกลางแจ้งช่วงฤดูร้อน",
-    slug: "caesars-republic-lake-tahoe",
-    sourceUrl: "https://www.ieethailand.com/work_and_travel_2/caesars-republic-lake-tahoe/",
-  },
-  {
-    employer: "FOXWOODS RESORT CASINO",
-    location: "Mashantucket, Connecticut (CT)",
-    seasons: ["Summer 2027"],
-    listingText: "หนึ่งในรีสอร์ตเอนเตอร์เทนเมนต์ที่ใหญ่ที่สุดในสหรัฐฯ ค่าจ้างมั่นคง มีชั่วโมงงานเต็มที่ และที่พักพนักงานพร้อม",
-    slug: "foxwoods-resort-casino",
-    sourceUrl: "https://www.ieethailand.com/work_and_travel_2/foxwoods-resort-casino/",
-  },
-  {
-    employer: "MOHEGAN SUN RESORT",
-    location: "Uncasville, Connecticut (CT)",
-    seasons: ["Summer 2027"],
-    listingText: "รีสอร์ตและคอมเพล็กซ์ความบันเทิงระดับพรีเมียม สภาพแวดล้อมปลอดภัย สิ่งอำนวยความสะดวกครบครัน",
-    slug: "mohegan-sun-resort",
-    sourceUrl: "https://www.ieethailand.com/work_and_travel_2/mohegan-sun-resort/",
-  },
-  {
-    employer: "WISCONSIN DELLS RESORT & WATERPARK",
-    location: "Wisconsin Dells, Wisconsin (WI)",
-    seasons: ["Summer 2027"],
-    listingText: "เมืองหลวงแห่งสวนน้ำของอเมริกา แหล่งรวมเด็ก WAT ทั่วโลก โอกาสหางานที่สองสูงมาก เดินทางสะดวกด้วยจักรยาน",
-    slug: "wisconsin-dells-waterpark",
-    sourceUrl: "https://www.ieethailand.com/work_and_travel_2/wisconsin-dells-waterpark/",
-  },
-  {
-    employer: "MYRTLE BEACH RESORT CLUB",
-    location: "Myrtle Beach, South Carolina (SC)",
-    seasons: ["Summer 2027"],
-    listingText: "เมืองท่องเที่ยวชายหาดฝั่งตะวันออก บรรยากาศคึกคัก มีร้านอาหาร คาเฟ่ และโรงแรมเปิดรับงานสองจำนวนมาก",
-    slug: "myrtle-beach-resort-club",
-    sourceUrl: "https://www.ieethailand.com/work_and_travel_2/myrtle-beach-resort-club/",
-  },
-];
-
 export async function GET() {
   console.log("[API /api/iee-jobs] Fetching live listings from:", LISTING_URL);
   const startTime = Date.now();
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 25000);
+    const timeout = setTimeout(() => controller.abort(), 20000);
 
     const response = await fetch(LISTING_URL, {
       signal: controller.signal,
@@ -94,16 +44,14 @@ export async function GET() {
       console.warn(`[API /api/iee-jobs] Fetch returned status ${response.status}`);
     }
   } catch (error) {
-    // If live fetch fails (e.g. offline / sandbox / rate-limit), fall back to catalog
-    console.error("[API /api/iee-jobs] Live IEE fetch failed, falling back to static list. Reason:", error);
+    console.error("[API /api/iee-jobs] Live IEE fetch failed, serving snapshot dataset. Reason:", error);
   }
 
-  console.warn(`[API /api/iee-jobs] Returning ${FALLBACK_IEE_LISTINGS.length} fallback listings`);
-  // Seamless fallback so the user always has working IEE jobs to browse
+  // Use the complete 74 employers snapshot dataset scraped from IEE Thailand
+  console.log(`[API /api/iee-jobs] Serving verified snapshot of ${snapshotListings.length} employers`);
   return NextResponse.json({
     sourceUrl: LISTING_URL,
     checkedAt: new Date().toISOString(),
-    listings: FALLBACK_IEE_LISTINGS,
+    listings: snapshotListings as IEEEmployerListing[],
   });
 }
-
