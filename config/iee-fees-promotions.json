@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 2,
+  "configId": "iee-fees-promotions-user-provided-2026-10-v2",
+  "provider": "IEE",
+  "sourceStatus": "user_provided_not_independently_verified",
+  "lastReviewedDate": "2026-10-25",
+  "currencyRules": {
+    "primaryTripBudgetCurrency": "USD",
+    "displayCurrencies": ["USD", "THB"],
+    "exchangeRateTHBPerUSD": null,
+    "exchangeRateEffectiveDate": null,
+    "note": "Do not combine USD and THB until a user-supplied or verified exchange rate is available."
+  },
+  "promotionWindow": {
+    "startsOn": "2026-10-16",
+    "endsOn": "2026-10-31",
+    "inclusive": true,
+    "label": "โปรโมชั่นภายในวันที่ 16–31 ตุลาคม 2569",
+    "amountsOrPercentagesProvided": false,
+    "note": "The user supplied a promotion period, but did not provide standard promotion discount amounts or percentages."
+  },
+  "applicationPaymentEligibility": [
+    {
+      "applicationFeePaidTHB": 7900,
+      "eligibleGroupTypes": ["classic", "signature", "exclusive"],
+      "ineligibleGroupTypes": ["ultimate"],
+      "messageTh": "ผู้ที่ชำระค่าสมัคร 7,900 บาท ไม่สามารถเลือกกลุ่มงาน Ultimate ได้ (กลุ่ม Ultimate ค่าสมัคร 9,900 บาท)",
+      "sourceStatus": "user_provided_not_independently_verified"
+    }
+  ],
+  "groupTypes": {
+    "classic": {
+      "labelTh": "IEE Classic",
+      "fees": {
+        "applicationFeeTHB": 7900,
+        "programFeePart1THB": 20000,
+        "programFeePart2THB": 59900,
+        "groupProcessingFeeTHB": 0,
+        "visaFeeUSD": 185,
+        "sevisFeeTHB": 3900,
+        "airfareTHB": null,
+        "otherFeesTHB": null
+      },
+      "promotionEligibility": {
+        "eligibleForGeneralPromotion": true,
+        "allowedDiscountTypes": ["group_discount", "pair_discount"],
+        "discountAmounts": null,
+        "noteTh": "ไม่มีค่าดำเนินการกลุ่มงาน (0 บาท)"
+      },
+      "knownFixedFeeSubtotalTHB": 91700,
+      "knownFixedFeeSubtotalUSD": 185,
+      "subtotalExcludes": ["airfare", "housing", "food", "local_transport", "other_unknown_costs"],
+      "notesTh": "ยอดย่อยของค่าธรรมเนียม: 91,700 บาท + 185 ดอลลาร์สหรัฐ (ไม่มีค่าดำเนินการกลุ่มงาน)"
+    },
+    "signature": {
+      "labelTh": "IEE Signature",
+      "fees": {
+        "applicationFeeTHB": 7900,
+        "programFeePart1THB": 20000,
+        "programFeePart2THB": 54900,
+        "groupProcessingFeeTHB": 8000,
+        "visaFeeUSD": 185,
+        "sevisFeeTHB": 3900,
+        "airfareTHB": null,
+        "otherFeesTHB": null
+      },
+      "promotionEligibility": {
+        "eligibleForGeneralPromotion": true,
+        "allowedDiscountTypes": ["group_discount", "pair_discount"],
+        "discountAmounts": null,
+        "noteTh": "ค่าโครงการส่วนที่ 2 อยู่ที่ 54,900 บาท มีค่าดำเนินการกลุ่มงาน 8,000 บาท"
+      },
+      "knownFixedFeeSubtotalTHB": 94700,
+      "knownFixedFeeSubtotalUSD": 185,
+      "subtotalExcludes": ["airfare", "housing", "food", "local_transport", "other_unknown_costs"],
+      "notesTh": "ยอดย่อยของค่าธรรมเนียม: 94,700 บาท + 185 ดอลลาร์สหรัฐ"
+    },
+    "exclusive": {
+      "labelTh": "IEE Exclusive",
+      "fees": {
+        "applicationFeeTHB": 7900,
+        "programFeePart1THB": 20000,
+        "programFeePart2THB": 59900,
+        "groupProcessingFeeTHB": 8000,
+        "visaFeeUSD": 185,
+        "sevisFeeTHB": 3900,
+        "airfareTHB": null,
+        "otherFeesTHB": null
+      },
+      "promotionEligibility": {
+        "eligibleForGeneralPromotion": true,
+        "allowedDiscountTypes": ["group_discount", "pair_discount"],
+        "discountAmounts": null,
+        "noteTh": "ค่าโครงการส่วนที่ 2 อยู่ที่ 59,900 บาท มีค่าดำเนินการกลุ่มงาน 8,000 บาท"
+      },
+      "knownFixedFeeSubtotalTHB": 99700,
+      "knownFixedFeeSubtotalUSD": 185,
+      "subtotalExcludes": ["airfare", "housing", "food", "local_transport", "other_unknown_costs"],
+      "notesTh": "ยอดย่อยของค่าธรรมเนียม: 99,700 บาท + 185 ดอลลาร์สหรัฐ"
+    },
+    "ultimate": {
+      "labelTh": "IEE Ultimate",
+      "fees": {
+        "applicationFeeTHB": 9900,
+        "programFeePart1THB": 20000,
+        "programFeePart2THB": 63900,
+        "groupProcessingFeeTHB": 8000,
+        "visaFeeUSD": 185,
+        "sevisFeeTHB": 3900,
+        "airfareTHB": null,
+        "otherFeesTHB": null
+      },
+      "promotionEligibility": {
+        "eligibleForGeneralPromotion": false,
+        "allowedDiscountTypes": ["group_discount", "pair_discount"],
+        "groupAndPairDiscountMayBeCombined": true,
+        "discountAmounts": null,
+        "noteTh": "กลุ่มงาน Ultimate ไม่เข้าร่วมส่วนลดโปรโมชั่นทั่วไป แต่สามารถใช้ส่วนลดกลุ่มและส่วนลดมาเป็นคู่ได้ ค่าสมัคร 9,900 บาท ค่าโครงการส่วนที่ 2 อยู่ที่ 63,900 บาท และมีค่าดำเนินการกลุ่มงาน 8,000 บาท",
+        "sourceStatus": "user_provided_not_independently_verified"
+      },
+      "knownFixedFeeSubtotalTHB": 105700,
+      "knownFixedFeeSubtotalUSD": 185,
+      "subtotalExcludes": ["airfare", "housing", "food", "local_transport", "other_unknown_costs"],
+      "notesTh": "ยอดย่อยของค่าธรรมเนียม: 105,700 บาท + 185 ดอลลาร์สหรัฐ"
+    }
+  },
+  "calculationRules": {
+    "neverTreatUnknownAsZero": true,
+    "neverDoubleCountIncludedFees": true,
+    "refundableDepositsExcludedFromFinalCostUnlessLost": true,
+    "emergencyReserveIsCashBufferNotExpense": true,
+    "discountOnlyAppliedWhenAmountOrRateIsKnown": true,
+    "showExpiredPromotionAsInactive": true,
+    "sourceNote": "Configuration is based on latest confirmed information supplied by user. Confirm current prices, terms, discounts, and fees with official IEE materials before making payment decisions."
+  }
+}

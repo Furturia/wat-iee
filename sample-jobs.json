@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "settings": {
+    "hideFullJobsByDefault": true,
+    "currencyDisplay": "both",
+    "exchangeRateTHBPerUSD": 35,
+    "exchangeRateDate": "2026-10-25",
+    "locale": "th-TH"
+  },
+  "jobs": [
+    {
+      "id": "demo-job-a",
+      "employerName": "Demo Employer A (FICTIONAL)",
+      "availabilityStatus": "unknown",
+      "availabilitySource": {"status": "unknown", "notes": "Fictional demo record; availability unknown."},
+      "jobTitle": "Resort Associate (fictional example)",
+      "city": "Example City",
+      "state": "Colorado",
+      "hourlyWageUSD": 18,
+      "employmentStartDate": "2027-06-01",
+      "employmentEndDate": "2027-08-24",
+      "expectedHoursPerWeek": 32,
+      "minimumHoursPerWeek": 24,
+      "maximumHoursPerWeek": 40,
+      "lowHoursPerWeek": 24,
+      "highHoursPerWeek": 40,
+      "estimatedDeductionRate": 0.1,
+      "oneTimeCosts": [
+        {
+          "amount": 4500,
+          "currency": "USD",
+          "label": "Illustrative program/travel costs (fictional)",
+          "paidUpfront": true,
+          "status": "estimated"
+        }
+      ],
+      "weeklyCosts": [
+        {"amount": 180, "currency": "USD", "label": "Housing (fictional)"},
+        {"amount": 100, "currency": "USD", "label": "Food (fictional)"}
+      ],
+      "refundableDepositsUSD": 150,
+      "emergencyReserveUSD": 300,
+      "notes": "Fictional data for UI and calculation testing only.",
+      "source": {
+        "status": "estimated",
+        "notes": "Not a real employer or offer. Do not use for actual decisions."
+      },
+      "createdAt": "2026-10-25T00:00:00.000Z",
+      "updatedAt": "2026-10-25T00:00:00.000Z"
+    },
+    {
+      "id": "demo-job-b",
+      "employerName": "Demo Employer B (FICTIONAL)",
+      "availabilityStatus": "unknown",
+      "availabilitySource": {"status": "unknown", "notes": "Fictional demo record; availability unknown."},
+      "jobTitle": "Food Service Associate (fictional example)",
+      "city": "Example Town",
+      "state": "Wisconsin",
+      "hourlyWageUSD": 15,
+      "employmentStartDate": "2027-06-01",
+      "employmentEndDate": "2027-08-24",
+      "expectedHoursPerWeek": 40,
+      "minimumHoursPerWeek": 35,
+      "maximumHoursPerWeek": 40,
+      "lowHoursPerWeek": 30,
+      "highHoursPerWeek": 40,
+      "estimatedDeductionRate": 0.1,
+      "oneTimeCosts": [
+        {
+          "amount": 4500,
+          "currency": "USD",
+          "label": "Illustrative program/travel costs (fictional)",
+          "paidUpfront": true,
+          "status": "estimated"
+        }
+      ],
+      "weeklyCosts": [
+        {"amount": 80, "currency": "USD", "label": "Housing (fictional)"},
+        {"amount": 80, "currency": "USD", "label": "Food (fictional)"}
+      ],
+      "refundableDepositsUSD": 100,
+      "emergencyReserveUSD": 300,
+      "notes": "Fictional data for UI and calculation testing only.",
+      "source": {
+        "status": "estimated",
+        "notes": "Not a real employer or offer. Do not use for actual decisions."
+      },
+      "createdAt": "2026-10-25T00:00:00.000Z",
+      "updatedAt": "2026-10-25T00:00:00.000Z"
+    }
+  ]
+}
