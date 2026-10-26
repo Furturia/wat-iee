@@ -188,15 +188,18 @@ export function IEEJobsBrowser({
   const loadListings = useCallback(async () => {
     setIsLoading(true);
     setLoadError("");
+    console.log("[IEEJobsBrowser] Requesting /api/iee-jobs ...");
     try {
       const response = await fetch("/api/iee-jobs");
       const data = (await response.json()) as IEEListingsResponse & {
         error?: string;
       };
       if (!response.ok) throw new Error(data.error || "โหลดรายการงานไม่สำเร็จ");
+      console.log(`[IEEJobsBrowser] Received ${data.listings?.length ?? 0} listings from API:`, data);
       setListings(data.listings);
       setCheckedAt(data.checkedAt);
     } catch (error) {
+      console.error("[IEEJobsBrowser] Failed to fetch listings:", error);
       setLoadError(
         error instanceof Error ? error.message : "โหลดรายการงานไม่สำเร็จ"
       );

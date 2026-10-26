@@ -115,6 +115,8 @@ export async function GET(
   }
 
   const sourceUrl = `${IEE_ORIGIN}/work_and_travel_2/${slug}/`;
+  console.log(`[API /api/iee-jobs/${slug}] Fetching positions from:`, sourceUrl);
+  const startTime = Date.now();
 
   try {
     const controller = new AbortController();
@@ -131,9 +133,13 @@ export async function GET(
     });
     clearTimeout(timeout);
 
+    console.log(`[API /api/iee-jobs/${slug}] Response status: ${response.status} in ${Date.now() - startTime}ms`);
+
     if (response.ok) {
       const text = await response.text();
       const positions = parseIEEPositions(text);
+      console.log(`[API /api/iee-jobs/${slug}] Successfully parsed ${positions.length} positions`);
+
       if (positions.length > 0) {
         return NextResponse.json({
           sourceUrl,
@@ -141,9 +147,11 @@ export async function GET(
           positions,
         });
       }
+    } else {
+      console.warn(`[API /api/iee-jobs/${slug}] Fetch returned status ${response.status}`);
     }
   } catch (error) {
-    console.warn(`Live IEE fetch for ${slug} failed, using positions fallback`, error);
+    console.error(`[API /api/iee-jobs/${slug}] Live IEE fetch failed. Reason:`, error);
   }
 
   // Fallback positions for the employer
