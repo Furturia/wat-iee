@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { parseIEEPositions, IEEPosition } from "@/lib/iee-scraper";
 
-export const revalidate = 21600;
+export const dynamic = "force-dynamic";
+export const maxDuration = 30;
 
 const IEE_ORIGIN = "https://www.ieethailand.com";
 
@@ -117,12 +118,16 @@ export async function GET(
 
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 4000);
+    const timeout = setTimeout(() => controller.abort(), 20000);
 
     const response = await fetch(sourceUrl, {
       signal: controller.signal,
-      next: { revalidate },
-      headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 WAT-Worth-It/1.0" },
+      next: { revalidate: 3600 },
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      },
     });
     clearTimeout(timeout);
 
